@@ -13,8 +13,8 @@
                     <div class="absolute top-1/2 left-0 w-full h-0.5 bg-gray-300 -translate-y-1/2 z-0"></div>
                     
                     <div class="flex justify-between w-full relative z-10">
-                        <div class="flex items-center justify-center w-10 h-10 rounded-full bg-red-700 text-white font-black border-4 border-white transition-all duration-300">1</div>
-                        <div class="flex items-center justify-center w-10 h-10 rounded-full bg-red-700 text-white font-black border-4 border-white transition-all duration-300">2</div>
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-400 text-white font-black border-4 border-white transition-all duration-300">1</div>
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-400 text-white font-black border-4 border-white transition-all duration-300">2</div>
                         <div class="flex items-center justify-center w-10 h-10 rounded-full bg-red-700 text-white font-black shadow-lg border-4 border-white transition-all duration-300 scale-110">3</div>
                     </div>
                 </div>
@@ -80,27 +80,47 @@
                     <h4 class="text-gray-400 font-black uppercase text-[10px] tracking-widest mb-4 border-b border-gray-200 pb-2">Physical Structure Analysis</h4>
                     
                     <div class="space-y-4">
+                        
                         <div class="flex justify-between items-center">
-                            <span class="text-sm font-bold text-gray-700">Shape Validation</span>
-                            {% if results.structural_data.is_rectangular %}
-                                <span class="text-xs font-black bg-green-100 text-green-700 px-3 py-1 rounded-full uppercase tracking-wider">Passed</span>
-                            {% else %}
-                                <span class="text-xs font-black bg-red-100 text-red-700 px-3 py-1 rounded-full uppercase tracking-wider">Irregular</span>
-                            {% endif %}
+                            <span class="text-sm font-bold text-gray-700">Shape (Solidity)</span>
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs font-bold text-gray-500">{{ results.structural_data.solidity }}</span>
+                                {% if results.structural_data.is_rectangular %}
+                                    <span class="text-[10px] font-black bg-green-100 text-green-700 px-2 py-1 rounded-md uppercase tracking-wider">Passed</span>
+                                {% else %}
+                                    <span class="text-[10px] font-black bg-red-100 text-red-700 px-2 py-1 rounded-md uppercase tracking-wider">Irregular</span>
+                                {% endif %}
+                            </div>
                         </div>
 
                         <div class="flex justify-between items-center">
-                            <span class="text-sm font-bold text-gray-700">Size / Proportions</span>
-                            {% if results.structural_data.is_valid_size %}
-                                <span class="text-xs font-black bg-green-100 text-green-700 px-3 py-1 rounded-full uppercase tracking-wider">Passed</span>
-                            {% else %}
-                                <span class="text-xs font-black bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full uppercase tracking-wider">Distorted</span>
-                            {% endif %}
+                            <span class="text-sm font-bold text-gray-700">CR80 Proportions</span>
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs font-bold text-gray-500">Ratio: {{ results.structural_data.aspect_ratio }}</span>
+                                {% if results.structural_data.matches_cr80_format %}
+                                    <span class="text-[10px] font-black bg-green-100 text-green-700 px-2 py-1 rounded-md uppercase tracking-wider">Passed</span>
+                                {% else %}
+                                    <span class="text-[10px] font-black bg-yellow-100 text-yellow-700 px-2 py-1 rounded-md uppercase tracking-wider">Distorted</span>
+                                {% endif %}
+                            </div>
                         </div>
 
-                        <div class="pt-2 border-t border-gray-100 text-xs text-gray-400 font-medium text-right">
-                            Detected Aspect Ratio: {{ results.structural_data.aspect_ratio }}
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-bold text-gray-700">Resolution Check</span>
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs font-bold text-gray-500">{{ results.structural_data.pixel_dimensions.width }}x{{ results.structural_data.pixel_dimensions.height }}px</span>
+                                {% if results.structural_data.is_valid_size %}
+                                    <span class="text-[10px] font-black bg-green-100 text-green-700 px-2 py-1 rounded-md uppercase tracking-wider">Passed</span>
+                                {% else %}
+                                    <span class="text-[10px] font-black bg-red-100 text-red-700 px-2 py-1 rounded-md uppercase tracking-wider">Low Res</span>
+                                {% endif %}
+                            </div>
                         </div>
+
+                        <div class="pt-3 mt-1 border-t border-gray-100 text-[10px] text-gray-400 font-medium text-right">
+                            Target CR80 Aspect Ratio: ~1.586 | Min Solidity: 0.90
+                        </div>
+
                     </div>
                 </div>
 

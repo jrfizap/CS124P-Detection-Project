@@ -1,0 +1,65 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-10 w-full">
+    <div class="bg-white rounded-[2.5rem] shadow-xl border border-gray-100 overflow-hidden">
+        <div class="p-8 md:p-16 flex flex-col items-center justify-center text-center">
+
+            <div class="mb-10 max-w-2xl">
+                <h1 class="text-4xl md:text-5xl font-black text-gray-900 uppercase tracking-tight mb-4">
+                    Santa Rosa Resident <br>
+                    <span class="text-red-700">Verification System</span>
+                </h1>
+                <p class="text-gray-500 font-medium text-lg">
+                    Fast, secure, and automated verification. Upload your ID to instantly verify your residency using advanced OCR and structural analysis.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mb-12">
+                
+                <div class="bg-gray-50 border border-gray-100 rounded-3xl p-8 flex flex-col items-center transition-transform hover:-translate-y-1 duration-300">
+                    <div class="w-16 h-16 bg-white rounded-full shadow-sm flex items-center justify-center text-red-700 mb-6 border border-gray-100">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                    <h3 class="font-black uppercase tracking-widest text-sm text-gray-900 mb-2">1. Your Details</h3>
+                    <p class="text-gray-500 text-sm font-medium">Enter your basic registration information.</p>
+                </div>
+
+                <div class="bg-gray-50 border border-gray-100 rounded-3xl p-8 flex flex-col items-center transition-transform hover:-translate-y-1 duration-300">
+                    <div class="w-16 h-16 bg-white rounded-full shadow-sm flex items-center justify-center text-red-700 mb-6 border border-gray-100">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="font-black uppercase tracking-widest text-sm text-gray-900 mb-2">2. Upload ID</h3>
+                    <p class="text-gray-500 text-sm font-medium">Provide a clear photo of your valid ID card.</p>
+                </div>
+
+                <div class="bg-gray-50 border border-gray-100 rounded-3xl p-8 flex flex-col items-center transition-transform hover:-translate-y-1 duration-300">
+                    <div class="w-16 h-16 bg-white rounded-full shadow-sm flex items-center justify-center text-red-700 mb-6 border border-gray-100">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <h3 class="font-black uppercase tracking-widest text-sm text-gray-900 mb-2">3. Auto-Verify</h3>
+                    <p class="text-gray-500 text-sm font-medium">Our system scans the ID for validity and matches it.</p>
+                </div>
+
+            </div>
+
+            <div class="w-full flex flex-col items-center border-t border-gray-100 pt-10">
+                <a href="/step1" class="w-full md:w-80 bg-red-700 hover:bg-red-800 text-white font-black py-5 text-center rounded-2xl shadow-lg uppercase tracking-widest text-sm transition-all active:scale-95">
+                    Start Verification
+                </a>
+                <p class="text-xs text-gray-400 font-medium mt-4 tracking-wide">
+                    Requires a valid physical ID card
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

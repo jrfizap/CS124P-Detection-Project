@@ -16,13 +16,14 @@ UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # ==========================================
-# FRONTEND ROUTES (Step 1, Step 2, Step 3)
+# FRONTEND ROUTES (Landing, Step 1, Step 2, Step 3)
 # ==========================================
 
 @app.route('/', methods=['GET'])
 def index():
-    """Redirects the homepage straight to Step 1."""
-    return redirect(url_for('step1'))
+    """Displays the Landing Page."""
+    # Render the new index.html instead of instantly redirecting
+    return render_template('index.html')
 
 @app.route('/step1', methods=['GET', 'POST'])
 def step1():
@@ -51,7 +52,6 @@ def step1():
             'city': request.form.get('City', 'Sta. Rosa, Laguna'),
             'address': request.form.get('Address', '')
         }
-        # This is where the error happened previously—it couldn't find step2!
         return redirect(url_for('step2'))
         
     return render_template('step1.html', barangays=barangays, data=session.get('user_data', {}))
@@ -85,7 +85,7 @@ def step3():
 def validate_id():
     """Processes the image and uses the session data for OCR scoring."""
     if 'id_file' not in request.files:
-        return jsonify({"error": "No ID file uploaded"}), 400
+        return jsonify({"success": False, "error": "No ID file uploaded"}), 400
         
     file = request.files['id_file']
     user_data = session.get('user_data', {})
@@ -98,6 +98,7 @@ def validate_id():
     vision_result = analyze_id_structure(filepath)
     if not vision_result.get("success"):
         if os.path.exists(filepath): os.remove(filepath)
+        # Returns the specific error (e.g., "No shape detected") to the frontend
         return jsonify({"success": False, "error": vision_result.get("error")}), 400
 
     # 2. OCR Text Extraction (Using Step 1 data)
@@ -107,9 +108,11 @@ def validate_id():
         os.remove(filepath)
 
     if not ocr_result.get("success"):
+        # Returns the specific error (e.g., "Not a valid ID" or "Not Sta Rosa")
         return jsonify({"success": False, "error": ocr_result.get("error")}), 400
 
     # 3. Final Validation Logic
+    # We now check is_valid_size (which includes the CR80 check) and solidity
     structure_passed = vision_result['structural_analysis']['is_rectangular'] and vision_result['structural_analysis']['is_valid_size']
     text_passed = ocr_result.get('total_score', 0) >= 0.70
 
@@ -127,7 +130,7 @@ def validate_id():
         "ocr_data": ocr_result
     }
 
-    return jsonify({"success": True}), 200
+    return jsonify({"success": True, "redirect": url_for('step3')}), 200
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
