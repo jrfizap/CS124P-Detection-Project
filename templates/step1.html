@@ -1,0 +1,244 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-10 w-full">
+    <div class="bg-white rounded-[2.5rem] shadow-xl border border-gray-100 overflow-hidden">
+        <div class="p-8 md:p-12">
+            
+            <div class="flex flex-col items-center justify-center mb-12">
+                <h2 class="text-4xl font-black text-gray-900 uppercase tracking-tight">Register</h2>
+                <p class="text-red-700 font-bold uppercase text-xs tracking-[0.2em] mt-2 mb-8">Step 1: Personal Profile</p>
+
+                <div class="flex items-center justify-center w-full max-w-md relative mx-auto">
+                    <div class="absolute top-1/2 left-0 w-full h-0.5 bg-gray-300 -translate-y-1/2 z-0"></div>
+                    
+                    <div class="flex justify-between w-full relative z-10">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full bg-red-700 text-white font-black shadow-lg border-4 border-white transition-all duration-300 scale-110">
+                            1
+                        </div>
+                        
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-400 text-white font-black border-4 border-white transition-all duration-300">
+                            2
+                        </div>
+                        
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-400 text-white font-black border-4 border-white transition-all duration-300">
+                            3
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form method="POST" action="/step1" class="space-y-6" id="registrationForm" onsubmit="return validateAndSubmitForm()">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-6">
+                    
+                    <div>
+                        <label for="First_Name" class="text-red-700 font-black uppercase text-[10px] block">First Name</label>
+                        <input id="First_Name" name="First_Name" type="text" value="{{ data.first_name if data else '' }}" class="block mt-1 w-full border border-gray-200 focus:border-red-500 focus:ring-red-500 outline-none rounded-xl bg-gray-50/50 p-2.5" required autofocus minlength="2" maxlength="50" pattern="^[A-Za-z][A-Za-z\s\-'\.]*$" title="First name must start with a letter and contain only letters, spaces, hyphens, apostrophes, and periods">
+                        <p class="text-[10px] mt-1" id="firstNameError"></p>
+                    </div>
+
+                    <div>
+                        <label for="Middle_Name" class="text-gray-400 font-black uppercase text-[10px] block">Middle Name (Optional)</label>
+                        <input id="Middle_Name" name="Middle_Name" type="text" value="{{ data.middle_name if data else '' }}" class="block mt-1 w-full border border-gray-200 focus:border-red-500 focus:ring-red-500 outline-none rounded-xl bg-gray-50/50 p-2.5" maxlength="50" pattern="^[A-Za-z][A-Za-z\s\-'\.]*$" title="Middle name must start with a letter and contain only letters, spaces, hyphens, apostrophes, and periods">
+                        <p class="text-[10px] mt-1" id="middleNameError"></p>
+                    </div>
+
+                    <div>
+                        <label for="Last_Name" class="text-red-700 font-black uppercase text-[10px] block">Last Name</label>
+                        <input id="Last_Name" name="Last_Name" type="text" value="{{ data.last_name if data else '' }}" class="block mt-1 w-full border border-gray-200 focus:border-red-500 focus:ring-red-500 outline-none rounded-xl bg-gray-50/50 p-2.5" required minlength="2" maxlength="50" pattern="^[A-Za-z][A-Za-z\s\-'\.]*$" title="Last name must start with a letter and contain only letters, spaces, hyphens, apostrophes, and periods">
+                        <p class="text-[10px] mt-1" id="lastNameError"></p>
+                    </div>
+
+                    <div>
+                        <label for="Birthdate" class="text-red-700 font-black uppercase text-[10px] block">Date of Birth</label>
+                        <input id="Birthdate" name="Birthdate" type="date" value="{{ data.birthdate if data else '' }}" class="block mt-1 w-full border border-gray-200 focus:border-red-500 focus:ring-red-500 outline-none rounded-xl bg-gray-50/50 p-2.5" required>
+                        <p class="text-[10px] text-gray-400 mt-1">You must be at least 15 years old</p>
+                    </div>
+
+                    <div>
+                        <label for="Civil_Status" class="text-red-700 font-black uppercase text-[10px] block">Civil Status</label>
+                        <select id="Civil_Status" name="Civil_Status" class="mt-1 block w-full border border-gray-200 rounded-xl focus:border-red-500 focus:ring-red-500 outline-none shadow-sm bg-gray-50/50 py-3 px-2" required>
+                            <option value="">Select Civil Status</option>
+                            {% for status in ['Single', 'Married', 'Widowed', 'Separated'] %}
+                                <option value="{{ status }}" {% if data and data.civil_status == status %}selected{% endif %}>{{ status }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="Years_Of_Residency" class="text-red-700 font-black uppercase text-[10px] block">Years of Residency in Sta. Rosa</label>
+                        <input id="Years_Of_Residency" name="Years_Of_Residency" type="text" inputmode="numeric" value="{{ data.years_of_residency if data else '' }}" class="block mt-1 w-full border border-gray-200 focus:border-red-500 focus:ring-red-500 outline-none rounded-xl bg-gray-50/50 p-2.5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder="e.g. 5" required pattern="^[0-9]{1,3}$" title="Please enter a number between 0 and 100">
+                        <p class="text-[10px] mt-1" id="residencyError"></p>
+                    </div>
+
+                    <div>
+                        <label for="Contact_Number" class="text-red-700 font-black uppercase text-[10px] block">Mobile Number</label>
+                        <div class="relative mt-1">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 font-bold text-sm">+63</span>
+                            <input id="Contact_Number" name="Contact_Number" type="text" inputmode="numeric" value="{{ data.contact_number if data else '' }}" class="block w-full pl-12 p-2.5 border border-gray-200 rounded-xl bg-gray-50/50 outline-none focus:border-red-500 focus:ring-red-500" placeholder="9123456789" required minlength="10" maxlength="10" pattern="^9[0-9]{9}$" title="Please enter a valid Philippine mobile number starting with 9 (10 digits)">
+                        </div>
+                        <p class="text-[10px] mt-1" id="contactError"></p>
+                    </div>
+
+                    <div>
+                        <label for="Barangay_ID" class="text-red-700 font-black uppercase text-[10px] block">Barangay</label>
+                        <select id="Barangay_ID" name="Barangay_ID" class="mt-1 block w-full border border-gray-200 rounded-xl focus:border-red-500 focus:ring-red-500 outline-none shadow-sm bg-gray-50/50 py-3 px-2" required>
+                            <option value="">Select Barangay</option>
+                            {% for barangay in barangays %}
+                                <option value="{{ barangay.Barangay_ID }}" {% if data and data.barangay_id|string == barangay.Barangay_ID|string %}selected{% endif %}>
+                                    {{ barangay.Barangay_Name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="City" class="text-gray-400 font-black uppercase text-[10px] block">City / Province</label>
+                        <input id="City" name="City" type="text" value="Sta. Rosa, Laguna" class="mt-1 block w-full bg-gray-100 border border-gray-200 rounded-xl text-gray-500 cursor-not-allowed p-2.5 outline-none" readonly>
+                    </div>
+
+                    <div class="md:col-span-3">
+                        <label for="Address" class="text-red-700 font-black uppercase text-[10px] block">House No. / Street / Subd.</label>
+                        <textarea id="Address" name="Address" rows="2" class="mt-1 block w-full border border-gray-200 rounded-xl focus:border-red-500 focus:ring-red-500 outline-none shadow-sm bg-gray-50/50 p-2.5" required minlength="5" maxlength="500" placeholder="e.g. 123 Main Street, Villa Subdivision">{{ data.address if data else '' }}</textarea>
+                        <p class="text-[10px] text-gray-400 mt-1"><span id="addressCount">0</span>/500 characters</p>
+                    </div>
+                </div>
+
+                <div class="pt-10 border-t border-gray-100 mt-6">
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                        <a href="#" class="w-full md:w-auto bg-gray-500 hover:bg-gray-600 text-white font-black py-4 px-12 rounded-2xl shadow-lg transition-all active:scale-95 uppercase tracking-widest text-sm text-center">Back</a>
+                        <button type="submit" id="submitBtn" class="w-full md:w-64 bg-red-700 hover:bg-red-800 text-white font-black py-4 rounded-2xl shadow-lg transition-all active:scale-95 uppercase tracking-widest text-sm disabled:opacity-50 disabled:cursor-not-allowed">Next Step</button>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-500 font-medium text-right mt-4">
+                    Already have an account? <a href="#" class="text-red-700 font-black hover:text-red-800 hover:underline transition ml-1">Log in here</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Exact Javascript from your Laravel file
+    const firstNameInput = document.getElementById('First_Name');
+    const middleNameInput = document.getElementById('Middle_Name');
+    const lastNameInput = document.getElementById('Last_Name');
+    const contactInput = document.getElementById('Contact_Number');
+    const residencyInput = document.getElementById('Years_Of_Residency');
+    const addressInput = document.getElementById('Address');
+    const birthdateInput = document.getElementById('Birthdate');
+
+    // Dynamic Max/Min Dates for Birthdate (15 to 120 years old)
+    const today = new Date();
+    const maxDate = new Date(); maxDate.setFullYear(today.getFullYear() - 15);
+    const minDate = new Date(); minDate.setFullYear(today.getFullYear() - 120);
+    birthdateInput.max = maxDate.toISOString().split("T")[0];
+    birthdateInput.min = minDate.toISOString().split("T")[0];
+
+    function validateName(input, errorElementId, fieldName, required = true) {
+        let value = input.value;
+        value = value.replace(/[^A-Za-z\s\-'\.]/g, '');
+        if (value.length > 0 && !/^[A-Za-z]/.test(value)) value = value.replace(/^[^A-Za-z]+/, '');
+        value = value.replace(/\s{2,}/g, ' ');
+        input.value = value;
+        const errorEl = document.getElementById(errorElementId);
+        if (errorEl) {
+            if (required && value.length > 0 && value.length < 2) {
+                errorEl.textContent = `${fieldName} must be at least 2 characters`;
+                errorEl.classList.add('text-red-500'); errorEl.classList.remove('text-gray-400');
+            } else {
+                errorEl.textContent = '';
+                errorEl.classList.remove('text-red-500');
+            }
+        }
+    }
+
+    function validateMobileNumber(input) {
+        let value = input.value.replace(/[^0-9]/g, '');
+        if (value.length > 10) value = value.slice(0, 10);
+        input.value = value;
+        const errorEl = document.getElementById('contactError');
+        if (value.length > 0) {
+            if (!value.startsWith('9')) {
+                errorEl.textContent = 'Mobile number must start with 9';
+                errorEl.classList.add('text-red-500'); errorEl.classList.remove('text-green-600');
+            } else if (value.length < 10) {
+                errorEl.textContent = `Enter ${10 - value.length} more digit(s)`;
+                errorEl.classList.add('text-red-500'); errorEl.classList.remove('text-green-600');
+            } else {
+                errorEl.textContent = '✓ Valid mobile number';
+                errorEl.classList.remove('text-red-500'); errorEl.classList.add('text-green-600');
+            }
+        } else {
+            errorEl.textContent = ''; errorEl.classList.remove('text-red-500', 'text-green-600');
+        }
+    }
+
+    function validateResidency(input) {
+        let value = input.value.replace(/[^0-9]/g, '');
+        if (value.length > 3) value = value.slice(0, 3);
+        const numValue = parseInt(value, 10);
+        if (numValue > 100) value = '100';
+        input.value = value;
+        const errorEl = document.getElementById('residencyError');
+        if (value.length > 0 && numValue > 100) {
+            errorEl.textContent = 'Maximum 100 years'; errorEl.classList.add('text-red-500');
+        } else {
+            errorEl.textContent = ''; errorEl.classList.remove('text-red-500');
+        }
+    }
+
+    function updateAddressCount() { document.getElementById('addressCount').textContent = addressInput.value.length; }
+
+    firstNameInput.addEventListener('input', function() { validateName(this, 'firstNameError', 'First name', true); });
+    middleNameInput.addEventListener('input', function() { validateName(this, 'middleNameError', 'Middle name', false); });
+    lastNameInput.addEventListener('input', function() { validateName(this, 'lastNameError', 'Last name', true); });
+    
+    contactInput.addEventListener('input', function() { validateMobileNumber(this); });
+    contactInput.addEventListener('keypress', function(e) { if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) e.preventDefault(); });
+    
+    residencyInput.addEventListener('input', function() { validateResidency(this); });
+    residencyInput.addEventListener('keypress', function(e) { if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) e.preventDefault(); });
+    
+    addressInput.addEventListener('input', updateAddressCount);
+    updateAddressCount();
+
+    function validateAndSubmitForm() {
+        const form = document.getElementById('registrationForm');
+        const btn = document.getElementById('submitBtn');
+        
+        validateName(firstNameInput, 'firstNameError', 'First name', true);
+        validateName(lastNameInput, 'lastNameError', 'Last name', true);
+        validateMobileNumber(contactInput);
+        validateResidency(residencyInput);
+        
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return false;
+        }
+
+        const contactValue = contactInput.value;
+        if (contactValue.length !== 10 || !contactValue.startsWith('9')) {
+            alert('Please enter a valid Philippine mobile number (10 digits starting with 9).');
+            return false;
+        }
+
+        const residencyValue = parseInt(residencyInput.value, 10);
+        if (isNaN(residencyValue) || residencyValue < 0 || residencyValue > 100) {
+            alert('Years of residency must be between 0 and 100.');
+            return false;
+        }
+
+        if (addressInput.value.trim().length < 5) {
+            alert('Please enter a valid address (at least 5 characters).');
+            return false;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = 'Processing...';
+        btn.classList.add('bg-gray-400');
+        btn.classList.remove('bg-red-700', 'hover:bg-red-800');
+        return true;
+    }
+</script>
+{% endblock %}
