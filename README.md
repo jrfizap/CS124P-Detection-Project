@@ -18,7 +18,7 @@ An automated 3-step identity verification microservice developed for the **Sta. 
    - Install the engine from [UB-Mannheim/tesseract](https://github.com/UB-Mannheim/tesseract/wiki).
    - Ensure the path in `services/ocr_service.py` matches your installation (Default: `C:\Program Files\Tesseract-OCR\tesseract.exe`).
 2. **Assets**: 
-   - Ensure `PawsBackground.png` and `Logo.png` are in the `static/images/` folder.
+   - Ensure `PawsBackground.png`, `Logo.png`, and `sample-national-id.png` are in the `static/images/` folder.
 
 ## Installation & Setup
 1. **Create and Activate Virtual Environment**:
