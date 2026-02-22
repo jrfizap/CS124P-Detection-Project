@@ -46,7 +46,7 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 
                 <div class="bg-gray-50 border border-gray-100 rounded-2xl p-6">
                     <h4 class="text-gray-400 font-black uppercase text-[10px] tracking-widest mb-4 border-b border-gray-200 pb-2">OCR Text Verification</h4>
@@ -123,9 +123,20 @@
 
                     </div>
                 </div>
-
             </div>
 
+            <div class="bg-gray-50 border border-gray-100 rounded-2xl p-6 flex flex-col items-center">
+                <h4 class="text-gray-400 font-black uppercase text-[10px] tracking-widest mb-6 border-b border-gray-200 pb-2 w-full text-center">Computer Vision Detection Matrix</h4>
+                
+                <div class="rounded-xl overflow-hidden border-2 border-blue-200 shadow-inner max-w-lg w-full bg-white relative">
+                    <img src="{{ url_for('static', filename='uploads/' ~ results.structural_data.processed_image) }}" alt="Processed ID" class="w-full h-auto object-contain">
+                </div>
+                
+                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mt-4 text-center">
+                    <span class="text-red-600 border border-red-200 bg-red-50 px-2 py-1 rounded-md mr-2">Red: Detected Card Contour</span>
+                    <span class="text-green-600 border border-green-200 bg-green-50 px-2 py-1 rounded-md">Green: CR80 Target Box</span>
+                </p>
+            </div>
             <div class="pt-10 mt-10 flex flex-col items-center justify-center border-t border-gray-100">
                 {% if results.final_status == 'Invalid' %}
                     <p class="text-sm text-gray-500 font-medium mb-4 text-center">Your ID was rejected. You may go back and try uploading a clearer image.</p>

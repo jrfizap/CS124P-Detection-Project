@@ -12,7 +12,7 @@ app = Flask(__name__)
 app.secret_key = 'cs124p-super-secret-key'
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # ==========================================
@@ -97,7 +97,7 @@ def validate_id():
     # 1. Structural Analysis
     vision_result = analyze_id_structure(filepath)
     if not vision_result.get("success"):
-        if os.path.exists(filepath): os.remove(filepath)
+        # if os.path.exists(filepath): os.remove(filepath)
         # Returns the specific error (e.g., "No shape detected") to the frontend
         return jsonify({"success": False, "error": vision_result.get("error")}), 400
 

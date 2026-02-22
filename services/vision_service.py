@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import logging
+import os
 
 def analyze_id_structure(filepath):
     """
@@ -55,34 +56,42 @@ def analyze_id_structure(filepath):
         hull = cv2.convexHull(largest_contour)
         hull_area = cv2.contourArea(hull)
         
-        # Solidity is the ratio of the ID area to its "rubber band" area.
-        # A perfect rectangle is 1.0. An ID with rounded corners is usually ~0.95 to 0.98.
         solidity = float(contour_area) / float(hull_area) if hull_area > 0 else 0
-        is_rectangular = solidity > 0.90 # Relaxed to 90% to allow for slight background bleeding
+        is_rectangular = solidity > 0.90
         
         # 5. Size/Proportion Detection (CR80 ISO 7810 Format)
-        # CR80 Physical Dimensions: 85.60 mm × 53.98 mm (3.375 in × 2.125 in)
         rect = cv2.minAreaRect(largest_contour)
         (center_x, center_y), (w, h), angle = rect
         
-        # Ensure we always divide the long side by the short side, regardless of orientation
         width = max(w, h)
         height = min(w, h)
         
         aspect_ratio = float(width) / float(height) if height > 0 else 0
-        
-        # Target CR80 ISO 7810 aspect ratio is ~1.586
-        # Tightened the tolerance (1.45 to 1.70) to strictly enforce the ID shape 
-        # while allowing a small buffer for 3D camera perspective distortion.
         is_cr80_aspect_ratio = 1.45 <= aspect_ratio <= 1.70
         
-        # Check minimum pixel resolution (e.g., ~150 DPI minimum for a CR80 card is ~500px wide)
-        # Adjust this value based on how high-quality you need the uploads to be.
         min_pixel_width = 500
         is_valid_resolution = width >= min_pixel_width
-        
-        # It is a valid size if it matches the CR80 proportions AND is large enough to read
         is_valid_size = is_cr80_aspect_ratio and is_valid_resolution
+
+        # ==========================================
+        # 6. GENERATE "AFTER" IMAGE FOR FRONTEND
+        # ==========================================
+        # Convert grayscale back to BGR so we can draw colored lines on it
+        annotated_image = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
+        
+        # Draw the detected object contour in RED
+        cv2.drawContours(annotated_image, [largest_contour], -1, (0, 0, 255), 5)
+        
+        # Draw the Rotated Rectangle (CR80 target box) in GREEN
+        box = cv2.boxPoints(rect)
+        box = np.intp(box)
+        cv2.drawContours(annotated_image, [box], 0, (0, 255, 0), 3)
+
+        # Save the new image with '_processed' added to the filename
+        processed_filepath = filepath.replace('.jpg', '_processed.jpg')
+        cv2.imwrite(processed_filepath, annotated_image)
+        
+        processed_filename = os.path.basename(processed_filepath)
         
         return {
             "success": True,
@@ -92,7 +101,8 @@ def analyze_id_structure(filepath):
                 "solidity": round(solidity, 3),
                 "is_valid_size": bool(is_valid_size),
                 "matches_cr80_format": bool(is_cr80_aspect_ratio),
-                "pixel_dimensions": {"width": int(width), "height": int(height)}
+                "pixel_dimensions": {"width": int(width), "height": int(height)},
+                "processed_image": processed_filename  # <--- NEW: Send filename to Step 3
             }
         }
 
