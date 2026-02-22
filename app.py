@@ -28,14 +28,27 @@ def index():
 @app.route('/step1', methods=['GET', 'POST'])
 def step1():
     """Handles the Personal Profile form."""
-    # Mock data to replace Laravel's $barangays query
+    
+    # Updated to include all 18 barangays of Sta. Rosa
     barangays = [
         {"Barangay_ID": "1", "Barangay_Name": "Aplaya"},
         {"Barangay_ID": "2", "Barangay_Name": "Balibago"},
-        {"Barangay_ID": "3", "Barangay_Name": "Don Jose"},
-        {"Barangay_ID": "4", "Barangay_Name": "Macabling"},
-        {"Barangay_ID": "5", "Barangay_Name": "Pooc"},
-        {"Barangay_ID": "6", "Barangay_Name": "Tagapo"}
+        {"Barangay_ID": "3", "Barangay_Name": "Caingin"},
+        {"Barangay_ID": "4", "Barangay_Name": "Dila"},
+        {"Barangay_ID": "5", "Barangay_Name": "Dita"},
+        {"Barangay_ID": "6", "Barangay_Name": "Don Jose"},
+        {"Barangay_ID": "7", "Barangay_Name": "Ibaba"},
+        {"Barangay_ID": "8", "Barangay_Name": "Kanluran"},
+        {"Barangay_ID": "9", "Barangay_Name": "Labas"},
+        {"Barangay_ID": "10", "Barangay_Name": "Macabling"},
+        {"Barangay_ID": "11", "Barangay_Name": "Malitlit"},
+        {"Barangay_ID": "12", "Barangay_Name": "Malusak"},
+        {"Barangay_ID": "13", "Barangay_Name": "Market Area"},
+        {"Barangay_ID": "14", "Barangay_Name": "Pook"},
+        {"Barangay_ID": "15", "Barangay_Name": "Pulong Santa Cruz"},
+        {"Barangay_ID": "16", "Barangay_Name": "Santo Domingo"},
+        {"Barangay_ID": "17", "Barangay_Name": "Sinalhan"},
+        {"Barangay_ID": "18", "Barangay_Name": "Tagapo"}
     ]
 
     if request.method == 'POST':
