@@ -22,8 +22,8 @@ An automated 3-step identity verification microservice developed for the **Sta. 
 
 ## Installation & Setup
 1. **Create and Activate Virtual Environment**:
-   ```bash
+   ```cmd
    python -m venv venv
    venv\Scripts\activate
    pip install -r requirements.txt
-   py app.py
+   python app.py
