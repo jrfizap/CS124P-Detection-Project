@@ -96,7 +96,7 @@ def step3():
 
 @app.route('/api/validate', methods=['POST'])
 def validate_id():
-    """Processes the image and uses the session data for OCR scoring."""
+    """Processes the image and ALWAYS redirects to Step 3, even on failure."""
     if 'id_file' not in request.files:
         return jsonify({"success": False, "error": "No ID file uploaded"}), 400
         
@@ -107,42 +107,53 @@ def validate_id():
     filepath = os.path.join(UPLOAD_FOLDER, secure_filename(filename))
     file.save(filepath)
 
-    # 1. Structural Analysis
+    # 1. Run both analysis services
     vision_result = analyze_id_structure(filepath)
-    if not vision_result.get("success"):
-        # if os.path.exists(filepath): os.remove(filepath)
-        # Returns the specific error (e.g., "No shape detected") to the frontend
-        return jsonify({"success": False, "error": vision_result.get("error")}), 400
-
-    # 2. OCR Text Extraction (Using Step 1 data)
     ocr_result = extract_and_score_id(filepath, user_data)
     
-    if os.path.exists(filepath): 
-        os.remove(filepath)
-
-    if not ocr_result.get("success"):
-        # Returns the specific error (e.g., "Not a valid ID" or "Not Sta Rosa")
-        return jsonify({"success": False, "error": ocr_result.get("error")}), 400
-
-    # 3. Final Validation Logic
-    # We now check is_valid_size (which includes the CR80 check) and solidity
-    structure_passed = vision_result['structural_analysis']['is_rectangular'] and vision_result['structural_analysis']['is_valid_size']
-    text_passed = ocr_result.get('total_score', 0) >= 0.70
-
-    if structure_passed and text_passed:
-        final_status = "Valid"
-    elif text_passed and not structure_passed:
-        final_status = "Suspicious"
-    else:
-        final_status = "Invalid"
-
-    # Save the results to the session so Step 3 can read them
-    session['verification_results'] = {
-        "final_status": final_status,
-        "structural_data": vision_result['structural_analysis'],
-        "ocr_data": ocr_result
+    # 2. Setup default "Failed" data in case a service crashed or rejected the image
+    # This prevents Step 3's HTML from crashing when it tries to display percentages
+    structural_data = vision_result.get('structural_analysis', {
+        "is_rectangular": False, "aspect_ratio": 0.0, "solidity": 0.0,
+        "is_valid_size": False, "matches_cr80_format": False,
+        "pixel_dimensions": {"width": 0, "height": 0},
+        "processed_image": "" 
+    })
+    
+    ocr_data = ocr_result if ocr_result.get("success") else {
+        "total_score": 0.0,
+        "scores": {"first_name": 0.0, "last_name": 0.0, "middle_name": 0.0, "address": 0.0}
     }
 
+    # 3. Determine Final Status and capture the specific error message
+    error_message = None
+    if not vision_result.get("success"):
+        final_status = "Invalid"
+        error_message = vision_result.get("error")
+    elif not ocr_result.get("success"):
+        final_status = "Invalid"
+        error_message = ocr_result.get("error")
+    else:
+        # If both services succeeded, do the final math
+        structure_passed = structural_data['is_rectangular'] and structural_data['is_valid_size']
+        text_passed = ocr_data.get('total_score', 0) >= 0.70
+
+        if structure_passed and text_passed:
+            final_status = "Valid"
+        elif text_passed and not structure_passed:
+            final_status = "Suspicious"
+        else:
+            final_status = "Invalid"
+
+    # 4. Save to session so Step 3 can render it
+    session['verification_results'] = {
+        "final_status": final_status,
+        "specific_error": error_message,  # We pass the exact reason it failed
+        "structural_data": structural_data,
+        "ocr_data": ocr_data
+    }
+
+    # ALWAYS return success: True so the frontend JS redirects to Step 3
     return jsonify({"success": True, "redirect": url_for('step3')}), 200
 
 if __name__ == '__main__':

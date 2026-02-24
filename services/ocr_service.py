@@ -30,6 +30,12 @@ def extract_and_score_id(filepath, user_data):
         clean_ocr = re.sub(r'[^a-z0-9\s]', '', normalized_ocr)
         ocr_tokens = clean_ocr.split()
 
+        print("\n" + "="*60)
+        print("OCR TOKENIZATION ENGINE TRIGGERED")
+        print(f"TOTAL TOKENS FOUND: {len(ocr_tokens)}")
+        print(f"TOKENS ARRAY: {ocr_tokens}")
+        print("="*60 + "\n")
+
         # ==========================================
         # 3. Valid ID Detection (Keyword Matching)
         # ==========================================
@@ -56,24 +62,28 @@ def extract_and_score_id(filepath, user_data):
         # ==========================================
         score_santa = get_composite_score("santa", ocr_tokens)
         score_sta = get_composite_score("sta", ocr_tokens)
+        score_s = get_composite_score("s", ocr_tokens) # Added to catch "S. Rosa"
         score_rosa = get_composite_score("rosa", ocr_tokens)
 
-        best_first_word_score = max(score_santa, score_sta)
+        # The computer will accept "santa", "sta", OR "s" as the first word
+        best_first_word_score = max(score_santa, score_sta, score_s)
 
         is_from_sta_rosa = (best_first_word_score >= 0.75) and (score_rosa >= 0.75)
         
+        # Fallback for smashed words without spaces
         if not is_from_sta_rosa:
             smashed_text = clean_ocr.replace(" ", "")
-            if "starosa" in smashed_text or "santarosa" in smashed_text:
+            # Added "srosa" to catch "S.Rosa" without spaces
+            if "starosa" in smashed_text or "santarosa" in smashed_text or "srosa" in smashed_text:
                 is_from_sta_rosa = True
 
         if not is_from_sta_rosa:
-            logging.warning(f"OUTSIDE_STA_ROSA_DETECTED. Best token scores -> Santa/Sta: {best_first_word_score}, Rosa: {score_rosa}")
+            logging.warning(f"OUTSIDE_STA_ROSA_DETECTED. Best token scores -> Santa/Sta/S: {best_first_word_score}, Rosa: {score_rosa}")
             return {
                 "success": False, 
                 "error": "Address not within Sta. Rosa. Please ensure your ID displays a valid Sta. Rosa address."
             }
-
+        
         # ==========================================
         # 5. Scoring Logic (Names & Address)
         # ==========================================
